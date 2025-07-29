@@ -51,7 +51,15 @@ export default function ChatBox() {
     setIsLoading(true)
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
+      // Check if we have a valid API URL from environment
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+
+      
+      if (!apiUrl || apiUrl.includes('your-actual-railway-url')) {
+        throw new Error('API URL not configured properly')
+      }
+      
+      const response = await axios.post(`${apiUrl}/chat`, {
         message: inputMessage
       })
 
@@ -63,11 +71,26 @@ export default function ChatBox() {
       }
 
       setMessages(prev => [...prev, agentMessage])
-    } catch (error) {
-      console.error('Error sending message:', error)
+    } catch (error: any) {
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://fitness-rag-agent-production.up.railway.app'
+      
+      let errorText = `I'm sorry, I'm having trouble connecting to the server at ${apiUrl}.`
+      
+      if (error.response) {
+        // Server responded with error status
+        errorText += ` Server responded with status ${error.response.status}.`
+      } else if (error.request) {
+        // Request was made but no response received
+        errorText += ` No response received from server. This might be a CORS issue or the server might be down.`
+      } else {
+        // Something else happened
+        errorText += ` Error: ${error.message}`
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I'm sorry, I'm having trouble connecting to the server right now. Please make sure your fitness agent backend is running on http://localhost:8000 and try again.",
+        text: errorText,
         sender: 'agent',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }

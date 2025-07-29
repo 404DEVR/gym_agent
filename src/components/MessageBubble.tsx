@@ -9,6 +9,31 @@ interface MessageBubbleProps {
   timestamp?: string
 }
 
+// Simple markdown renderer for common formatting
+const renderMarkdown = (text: string) => {
+  // Handle bold text **text** or __text__
+  let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  formatted = formatted.replace(/__(.*?)__/g, '<strong>$1</strong>')
+  
+  // Handle italic text *text* or _text_
+  formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>')
+  formatted = formatted.replace(/_(.*?)_/g, '<em>$1</em>')
+  
+  // Handle inline code `code`
+  formatted = formatted.replace(/`(.*?)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono">$1</code>')
+  
+  // Handle line breaks
+  formatted = formatted.replace(/\n/g, '<br>')
+  
+  // Handle numbered lists
+  formatted = formatted.replace(/^\d+\.\s(.+)$/gm, '<div class="ml-4 mb-1">• $1</div>')
+  
+  // Handle bullet points
+  formatted = formatted.replace(/^[-*]\s(.+)$/gm, '<div class="ml-4 mb-1">• $1</div>')
+  
+  return formatted
+}
+
 export default function MessageBubble({ message, sender, timestamp }: MessageBubbleProps) {
   const isUser = sender === 'user'
 
@@ -42,9 +67,10 @@ export default function MessageBubble({ message, sender, timestamp }: MessageBub
                   ? 'bg-primary-600 text-white rounded-2xl rounded-br-md px-4 py-3' 
                   : 'bg-transparent text-gray-900 dark:text-gray-100 py-2'
               }`}>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                  {message}
-                </p>
+                <div 
+                  className="text-sm leading-relaxed break-words"
+                  dangerouslySetInnerHTML={{ __html: renderMarkdown(message) }}
+                />
               </div>
               
               {timestamp && (

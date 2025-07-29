@@ -14,17 +14,17 @@ export default function DebugPage() {
             try {
                 // Check current user
                 const { data: { user }, error: userError } = await supabase.auth.getUser()
-                console.log('Current user:', user, userError)
+
                 setUser(user)
 
                 // Check current session
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-                console.log('Current session:', session, sessionError)
+
                 setSession(session)
 
                 setLoading(false)
             } catch (error) {
-                console.error('Debug error:', error)
+
                 setLoading(false)
             }
         }
@@ -34,7 +34,7 @@ export default function DebugPage() {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (event, session) => {
-                console.log('Auth state change:', event, session)
+
                 setUser(session?.user ?? null)
                 setSession(session)
             }

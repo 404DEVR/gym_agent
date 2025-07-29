@@ -19,27 +19,27 @@ export default function ChatPage() {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
-        console.log('Chat page - checking session:', session?.user?.email, sessionError)
+
 
         if (sessionError) {
-          console.error('Session error:', sessionError)
+
           if (mounted) router.push('/auth/login')
           return
         }
 
         if (!session?.user) {
-          console.log('No session found, redirecting to login')
+
           if (mounted) router.push('/auth/login')
           return
         }
 
-        console.log('User authenticated, showing chat')
+
         if (mounted) {
           setUser(session.user)
           setLoading(false)
         }
       } catch (err) {
-        console.error('Unexpected error in checkAuth:', err)
+
         if (mounted) router.push('/auth/login')
       }
     }
@@ -49,15 +49,15 @@ export default function ChatPage() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state change:', event, session?.user?.email)
+
 
         if (!mounted) return
 
         if (event === 'SIGNED_OUT' || !session?.user) {
-          console.log('User signed out, redirecting to login')
+
           router.push('/auth/login')
         } else if (session?.user) {
-          console.log('User authenticated, updating state')
+
           setUser(session.user)
           setLoading(false)
         }
