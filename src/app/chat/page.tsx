@@ -38,8 +38,7 @@ export default function ChatPage() {
           setUser(session.user)
           setLoading(false)
         }
-      } catch (err) {
-
+      } catch {
         if (mounted) router.push('/auth/login')
       }
     }

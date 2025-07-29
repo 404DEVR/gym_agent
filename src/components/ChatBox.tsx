@@ -71,21 +71,22 @@ export default function ChatBox() {
       }
 
       setMessages(prev => [...prev, agentMessage])
-    } catch (error: any) {
-
+    } catch (error: unknown) {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://fitness-rag-agent-production.up.railway.app'
       
       let errorText = `I'm sorry, I'm having trouble connecting to the server at ${apiUrl}.`
       
-      if (error.response) {
+      if (error && typeof error === 'object' && 'response' in error) {
         // Server responded with error status
-        errorText += ` Server responded with status ${error.response.status}.`
-      } else if (error.request) {
+        const response = error.response as { status?: number }
+        errorText += ` Server responded with status ${response.status || 'unknown'}.`
+      } else if (error && typeof error === 'object' && 'request' in error) {
         // Request was made but no response received
         errorText += ` No response received from server. This might be a CORS issue or the server might be down.`
       } else {
         // Something else happened
-        errorText += ` Error: ${error.message}`
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        errorText += ` Error: ${errorMessage}`
       }
       
       const errorMessage: Message = {

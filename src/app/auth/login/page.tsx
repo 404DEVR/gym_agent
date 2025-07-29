@@ -36,8 +36,7 @@ export default function LoginPage() {
           router.push('/chat')
         }, 100)
       }
-    } catch (err) {
-
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)

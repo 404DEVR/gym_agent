@@ -13,18 +13,17 @@ export default function DebugPage() {
         const checkAuth = async () => {
             try {
                 // Check current user
-                const { data: { user }, error: userError } = await supabase.auth.getUser()
+                const { data: { user } } = await supabase.auth.getUser()
 
                 setUser(user)
 
                 // Check current session
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+                const { data: { session } } = await supabase.auth.getSession()
 
                 setSession(session)
 
                 setLoading(false)
-            } catch (error) {
-
+            } catch {
                 setLoading(false)
             }
         }
