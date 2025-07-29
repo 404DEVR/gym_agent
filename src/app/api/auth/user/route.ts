@@ -10,10 +10,10 @@ export async function GET(request: NextRequest) {
         get(name: string) {
           return request.cookies.get(name)?.value
         },
-        set(_name: string, _value: string, _options: unknown) {
+        set() {
           // Not needed for GET request
         },
-        remove(_name: string, _options: unknown) {
+        remove() {
           // Not needed for GET request
         },
       },
