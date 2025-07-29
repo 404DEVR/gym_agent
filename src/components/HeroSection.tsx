@@ -80,12 +80,12 @@ export default function HeroSection() {
                 <div className="space-y-4">
                   <div className="flex justify-end">
                     <div className="message-bubble-user">
-                      What's the best workout for building muscle?
+                      What&apos;s the best workout for building muscle?
                     </div>
                   </div>
                   <div className="flex justify-start">
                     <div className="message-bubble-agent">
-                      Great question! For muscle building, I recommend focusing on compound movements like squats, deadlifts, and bench press. Here's a personalized plan based on your goals...
+                      Great question! For muscle building, I recommend focusing on compound movements like squats, deadlifts, and bench press. Here&apos;s a personalized plan based on your goals...
                     </div>
                   </div>
                 </div>

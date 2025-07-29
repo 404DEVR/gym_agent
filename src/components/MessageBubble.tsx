@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { User, Bot } from 'lucide-react'
+import { User } from 'lucide-react'
 
 interface MessageBubbleProps {
   message: string
