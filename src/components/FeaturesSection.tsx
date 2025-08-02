@@ -1,31 +1,31 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Brain, Target, Clock, TrendingUp } from 'lucide-react'
+import { ChefHat, User, MessageCircle, Save } from 'lucide-react'
 
 const features = [
   {
-    icon: Brain,
-    title: 'AI-Powered Insights',
-    description: 'Get personalized recommendations based on advanced machine learning algorithms that understand your unique fitness profile and goals.',
+    icon: MessageCircle,
+    title: 'AI Chat Assistant',
+    description: 'Get personalized workout plans and fitness advice through our intelligent chat interface powered by advanced AI.',
     color: 'text-blue-600 dark:text-blue-400'
   },
   {
-    icon: Target,
-    title: 'Goal-Oriented Plans',
-    description: 'Whether you want to lose weight, build muscle, or improve endurance, our AI creates customized workout and nutrition plans.',
+    icon: ChefHat,
+    title: 'AI Chef & Meal Plans',
+    description: 'Generate detailed meal plans with recipes and macro breakdowns based on your goals and available ingredients.',
     color: 'text-green-600 dark:text-green-400'
   },
   {
-    icon: Clock,
-    title: '24/7 Availability',
-    description: 'Your fitness assistant never sleeps. Get instant answers to your questions anytime, anywhere, without waiting for appointments.',
+    icon: User,
+    title: 'Personal Profile',
+    description: 'Save and manage your workout plans and meal plans in one place. Access your fitness journey anytime.',
     color: 'text-purple-600 dark:text-purple-400'
   },
   {
-    icon: TrendingUp,
-    title: 'Progress Tracking',
-    description: 'Monitor your fitness journey with intelligent progress tracking and receive adaptive recommendations as you improve.',
+    icon: Save,
+    title: 'Plan Management',
+    description: 'Save your AI-generated plans to your profile and retrieve them whenever you need them for your fitness routine.',
     color: 'text-orange-600 dark:text-orange-400'
   }
 ]

@@ -1,166 +1,193 @@
-# AI Fitness Assistant - Web Application
+# AI Fitness & Nutrition Planner
 
-A modern, responsive web application for an AI-powered fitness assistant built with Next.js, TypeScript, TailwindCSS, and Supabase.
+A comprehensive Next.js application for fitness and nutrition planning with AI-powered features including chatbot assistance, meal planning, and workout generation.
 
-## Features
+## 🚀 Features
 
-- 🎯 **Modern UI/UX** - Clean, professional design with dark/light mode
-- 🔐 **Authentication** - Email/password and Google OAuth via Supabase
-- 💬 **Real-time Chat** - Interactive chat interface with your AI fitness assistant
-- 📱 **Responsive Design** - Mobile-first approach, works on all devices
-- 🎨 **Smooth Animations** - Framer Motion powered transitions and effects
-- 🛡️ **Protected Routes** - Secure chat access for authenticated users only
+### Core Features
+- **AI Chat Assistant**: Interactive chatbot powered by Gemini API for personalized fitness advice
+- **AI Chef**: Generate detailed meal plans with recipes and macro breakdowns
+- **Personal Profile**: Save and manage your workout plans and meal plans
+- **Plan Management**: Save AI-generated plans and access them anytime
 
-## Tech Stack
+### Technical Features
+- User authentication with Supabase
+- Responsive design with dark/light mode toggle
+- Real-time chat interface with animations
+- Plan saving and retrieval system
+- Row-level security for user data
 
-- **Frontend**: Next.js 15, TypeScript, TailwindCSS
-- **Authentication**: Supabase Auth (Email + Google OAuth)
+## 🛠 Tech Stack
+
+- **Frontend**: Next.js 15 (App Router), React 19, TypeScript
+- **Styling**: Tailwind CSS
+- **Authentication**: Supabase Auth
+- **Database**: Supabase (PostgreSQL)
+- **AI**: Google Gemini API
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
 - **HTTP Client**: Axios
-- **Backend**: Python FastAPI (fitness_rag_agent)
 
-## Setup Instructions
+## 📁 Project Structure
 
-### 1. Install Dependencies
+```
+src/
+├── app/                    # Next.js app router pages
+│   ├── auth/              # Authentication pages (login/signup)
+│   ├── chat/              # AI chat interface
+│   ├── chef/              # AI meal planning page
+│   ├── profile/           # User profile and saved plans
+│   └── api/               # API routes
+│       ├── auth/          # Authentication endpoints
+│       ├── generate-meal-plan/    # Meal plan generation
+│       └── generate-workout-plan/ # Workout plan generation
+├── components/            # Reusable React components
+│   ├── ChatBox.tsx        # Main chat interface
+│   ├── MealPlanCard.tsx   # Meal plan display component
+│   ├── WorkoutPlanCard.tsx # Workout plan display component
+│   ├── ProfileTabs.tsx    # Profile navigation tabs
+│   ├── SavePlanButton.tsx # Plan saving functionality
+│   └── ...               # Other UI components
+├── lib/                  # Utility functions and configurations
+│   └── supabase.ts       # Supabase client configuration
+└── middleware.ts         # Next.js middleware for auth
+```
 
+## 🗄️ Database Schema
+
+### Tables
+- **meal_plans**: Stores user meal plans with ingredients and recipes
+- **workout_plans**: Stores user workout plans with exercises and splits
+
+### Security
+- Row Level Security (RLS) enabled
+- Users can only access their own data
+- Automatic user association via auth.uid()
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Supabase account
+- Google Gemini API key
+
+### Installation
+
+1. **Clone the repository:**
+```bash
+git clone <repository-url>
+cd gym_chatbot
+```
+
+2. **Install dependencies:**
 ```bash
 npm install
 ```
 
-### 2. Environment Configuration
-
+3. **Set up environment variables:**
 Create a `.env.local` file in the root directory:
-
 ```env
 # Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# Backend API
-NEXT_PUBLIC_API_URL=http://localhost:8000
+# Backend API (for existing RAG system)
+NEXT_PUBLIC_API_URL=your_backend_api_url
+
+# Gemini API Configuration
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-### 3. Supabase Setup
-
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to Settings > API to get your URL and anon key
-3. Update the `.env.local` file with your credentials
-4. Enable Google OAuth in Authentication > Providers (optional)
-
-### 4. Backend Setup
-
-Make sure your Python FastAPI backend is running:
-
+4. **Set up the database:**
+Run the SQL migration in your Supabase dashboard:
 ```bash
-cd ../fitness_rag_agent
-python app.py
+# Execute the contents of supabase_migration.sql in your Supabase SQL editor
 ```
 
-The backend should be available at `http://localhost:8000`
-
-### 5. Run Development Server
-
+5. **Run the development server:**
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. **Open your browser:**
+Navigate to [http://localhost:3000](http://localhost:3000)
 
-## Project Structure
+## 🔧 Configuration
 
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── auth/              # Authentication pages
-│   │   ├── login/         # Login page
-│   │   └── signup/        # Signup page
-│   ├── chat/              # Protected chat page
-│   ├── api/               # API routes
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Home page
-├── components/            # Reusable components
-│   ├── ChatBox.tsx        # Main chat interface
-│   ├── MessageBubble.tsx  # Individual message component
-│   ├── HeroSection.tsx    # Landing page hero
-│   ├── FeaturesSection.tsx # Features showcase
-│   ├── Navbar.tsx         # Navigation bar
-│   ├── Footer.tsx         # Footer component
-│   └── DarkModeToggle.tsx # Theme switcher
-├── lib/                   # Utility libraries
-│   ├── supabase.ts        # Supabase client
-│   ├── auth.ts            # Auth helpers
-│   └── theme-context.tsx  # Theme provider
-└── middleware.ts          # Route protection
-```
+### Supabase Setup
+1. Create a new Supabase project
+2. Run the migration SQL to create tables
+3. Enable Row Level Security
+4. Get your project URL and anon key
 
-## Pages
+### Gemini API Setup
+1. Get a Gemini API key from Google AI Studio
+2. Add it to your environment variables
+3. The API is used for generating meal and workout plans
 
-- **`/`** - Landing page with hero section and features
-- **`/auth/login`** - User login with email/password and Google OAuth
-- **`/auth/signup`** - User registration
-- **`/chat`** - Protected chat interface (requires authentication)
+## 📱 Pages & Routes
 
-## Key Features
+### Public Routes
+- `/` - Landing page with features overview
+- `/auth/login` - User login
+- `/auth/signup` - User registration
 
-### Authentication
-- Email/password authentication
-- Google OAuth integration
-- Protected routes with middleware
-- Persistent login state
+### Protected Routes (require authentication)
+- `/chat` - AI fitness chat assistant
+- `/chef` - AI meal plan generator
+- `/profile` - User profile with saved plans
 
-### Chat Interface
-- Real-time messaging with AI assistant
-- Message history
-- Loading states and error handling
-- Responsive design
+## 🎨 UI/UX Features
 
-### Theme Support
-- Dark/light mode toggle
-- System preference detection
-- Persistent theme selection
+- **Responsive Design**: Mobile-first approach
+- **Dark/Light Mode**: Theme toggle with system preference detection
+- **Animations**: Smooth transitions using Framer Motion
+- **Modern Design**: Clean interface with Tailwind CSS
+- **Accessibility**: ARIA labels and keyboard navigation
 
-### Responsive Design
-- Mobile-first approach
-- Tailwind CSS for styling
-- Smooth animations and transitions
+## 🔒 Security Features
 
-## API Integration
+- **Authentication**: Secure user auth with Supabase
+- **Row Level Security**: Database-level access control
+- **API Protection**: Server-side API key management
+- **Input Validation**: Form validation and sanitization
 
-The frontend communicates with the Python FastAPI backend at `http://localhost:8000/chat`:
-
-```typescript
-// Example chat request
-const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
-  message: userMessage
-})
-```
-
-## Deployment
+## 🚀 Deployment
 
 ### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically
+1. Connect your GitHub repository to Vercel
+2. Add environment variables in Vercel dashboard
+3. Deploy automatically on push
 
 ### Other Platforms
+The application can be deployed on any Next.js-compatible hosting service like Netlify, Railway, or self-hosted solutions.
 
-The app can be deployed to any platform that supports Next.js:
-- Netlify
-- Railway
-- AWS Amplify
-- DigitalOcean App Platform
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
-MIT License - see LICENSE file for details
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+If you encounter any issues or have questions:
+1. Check the existing issues on GitHub
+2. Create a new issue with detailed information
+3. Include error messages and steps to reproduce
+
+## 🔮 Future Enhancements
+
+- PDF export for workout and meal plans
+- Progress tracking and analytics
+- Social features and plan sharing
+- Integration with fitness trackers
+- Advanced nutrition analysis
+- Recipe API integration (Spoonacular/Edamam)

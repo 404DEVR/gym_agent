@@ -60,12 +60,26 @@ export default function Navbar() {
               Home
             </Link>
             {user && (
-              <Link 
-                href="/chat" 
-                className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-              >
-                Chat
-              </Link>
+              <>
+                <Link 
+                  href="/chat" 
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                >
+                  Chat
+                </Link>
+                <Link 
+                  href="/chef" 
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                >
+                  Chef
+                </Link>
+                <Link 
+                  href="/profile" 
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                >
+                  Profile
+                </Link>
+              </>
             )}
           </div>
 
@@ -138,13 +152,29 @@ export default function Navbar() {
                 Home
               </Link>
               {user && (
-                <Link
-                  href="/chat"
-                  onClick={closeMobileMenu}
-                  className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-dark-800 rounded-md transition-colors"
-                >
-                  Chat
-                </Link>
+                <>
+                  <Link
+                    href="/chat"
+                    onClick={closeMobileMenu}
+                    className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-dark-800 rounded-md transition-colors"
+                  >
+                    Chat
+                  </Link>
+                  <Link
+                    href="/chef"
+                    onClick={closeMobileMenu}
+                    className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-dark-800 rounded-md transition-colors"
+                  >
+                    Chef
+                  </Link>
+                  <Link
+                    href="/profile"
+                    onClick={closeMobileMenu}
+                    className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-dark-800 rounded-md transition-colors"
+                  >
+                    Profile
+                  </Link>
+                </>
               )}
             </div>
             

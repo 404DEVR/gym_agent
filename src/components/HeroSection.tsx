@@ -32,9 +32,9 @@ export default function HeroSection() {
             </h1>
             
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
-              Get personalized workout plans, nutrition advice, and expert guidance 
-              tailored to your fitness goals. Chat with our AI-powered fitness expert 
-              available 24/7 to help you achieve your best self.
+              Get personalized workout plans, AI-generated meal plans, and expert guidance 
+              tailored to your fitness goals. Save your plans to your profile and access 
+              them anytime with our comprehensive fitness platform.
             </p>
           </motion.div>
 

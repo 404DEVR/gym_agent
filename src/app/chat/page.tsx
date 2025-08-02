@@ -86,7 +86,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-dark-900">
+    <div className="h-screen flex flex-col bg-white dark:bg-dark-900">
       <ChatBox />
     </div>
   )
