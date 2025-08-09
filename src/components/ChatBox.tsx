@@ -14,6 +14,25 @@ interface Message {
   text: string
   sender: 'user' | 'agent'
   timestamp: string
+  showBothButtons?: boolean
+  nutritionPlan?: {
+    goal: string
+    ingredients: string[]
+    dietary_restrictions: string[]
+    target_calories: number
+    daily_totals: {
+      calories: number
+      protein: number
+    }
+    meals: MealPlan['meals']
+  }
+  workoutPlan?: {
+    goal: string
+    split: string[]
+    days: number
+    exercises: WorkoutPlan['exercises']
+    user_profile?: UserProfile
+  }
 }
 
 interface UserProfile {
@@ -215,21 +234,38 @@ export default function ChatBox() {
 
   // Function to handle saving workout plan
   const handleSaveWorkoutPlan = () => {
-    setShowSaveWorkoutButton(false)
-    setCurrentWorkoutPlan(null)
+    // Don't hide buttons immediately - let SavePlanButton handle the success state
+    // Buttons will be hidden when next message is sent
   }
 
   // All parsing functions removed - now using structured JSON from Python API
 
-  // Function to handle providing recipe
-  const handleProvideRecipe = () => {
-    if (currentNutritionPlan) {
-      // Store nutrition plan data in localStorage to pass to chef page
-      localStorage.setItem('nutritionPlanData', JSON.stringify(currentNutritionPlan))
+  // Function to handle generating meal plan - redirect to chef page with auto-generation
+  const handleGenerateMealPlan = () => {
+    if (!currentNutritionPlan) return
 
-      // Navigate to chef page
-      window.location.href = '/chef'
+    // Extract ingredients from the nutrition plan text for chef page
+    const extractedIngredients = [
+      'oats', 'greek yogurt', 'berries', 'eggs', 'whole grain bread', 'avocado',
+      'chicken breast', 'brown rice', 'mixed vegetables', 'olive oil', 'lemon',
+      'fish', 'tofu', 'steamed vegetables', 'lentils', 'cucumber',
+      'apple', 'peanut butter', 'almonds', 'cottage cheese', 'protein powder'
+    ]
+
+    // Structure the nutrition plan data for the chef page (only what's needed for chef page)
+    const nutritionPlanData = {
+      goal: currentNutritionPlan.goal || 'Weight Loss',
+      ingredients: extractedIngredients,
+      dietary_restrictions: currentNutritionPlan.dietary_restrictions || [],
+      target_calories: currentNutritionPlan.target_calories || 2000,
+      auto_generate: true // Flag to auto-generate meal plan
     }
+
+    // Store nutrition plan data in localStorage to pass to chef page
+    localStorage.setItem('nutritionPlanData', JSON.stringify(nutritionPlanData))
+
+    // Navigate to chef page
+    window.location.href = '/chef'
 
     setShowProvideRecipeButton(false)
     setCurrentNutritionPlan(null)
@@ -276,8 +312,13 @@ export default function ChatBox() {
         messageWithContext = `User Profile: Age: ${userProfile.age}, Weight: ${userProfile.weight}kg, Height: ${userProfile.height}cm, Gender: ${userProfile.gender}, Goal: ${userProfile.fitness_goal}, Activity Level: ${userProfile.activity_level}, Daily Targets: ${userProfile.target_calories} calories, ${userProfile.target_protein}g protein, ${userProfile.target_carbs}g carbs, ${userProfile.target_fat}g fat. User Message: ${inputMessage}`
       }
 
+      // Get user ID from Supabase auth
+      const { data: { user } } = await supabase.auth.getUser()
+      const userId = user?.id || 'anonymous'
+
       const response = await axios.post(`${apiUrl}/chat`, {
-        message: messageWithContext
+        message: messageWithContext,
+        user_id: userId
       })
 
       const responseText = response.data.response || "I'm sorry, I couldn't process your request right now. Please try again."
@@ -293,20 +334,45 @@ export default function ChatBox() {
 
       // Check if API returned structured workout plan data
       if (response.data.workout_plan) {
+        console.log('🎯 Backend response data:', response.data)
+        console.log('🔘 show_both_buttons flag:', response.data.show_both_buttons)
+
         setCurrentWorkoutPlan(response.data.workout_plan)
         setShowSaveWorkoutButton(true)
+
+        // Add workout plan data to the agent message
+        const lastMessage = agentMessage
+        lastMessage.workoutPlan = response.data.workout_plan
+        lastMessage.showBothButtons = response.data.show_both_buttons || false
+
+        console.log('💾 Message with showBothButtons:', lastMessage.showBothButtons)
+
+        setMessages(prev => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1] = lastMessage
+          return newMessages
+        })
       }
 
       // Check if API returned structured nutrition plan data
       if (response.data.nutrition_plan) {
         setCurrentNutritionPlan(response.data.nutrition_plan)
         setShowProvideRecipeButton(true)
+
+        // Add nutrition plan data to the agent message
+        const lastMessage = agentMessage
+        lastMessage.nutritionPlan = response.data.nutrition_plan
+        setMessages(prev => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1] = lastMessage
+          return newMessages
+        })
       }
-        } catch {
+    } catch {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://gym-agent-rag.onrender.com'
-      
+
       let errorText = `I'm sorry, I'm having trouble connecting to the server at ${apiUrl}.`
-      
+
       errorText += ` No response received from server. This might be a CORS issue or the server might be down.`
 
       const errorMessage: Message = {
@@ -387,11 +453,13 @@ export default function ChatBox() {
                     message={message.text}
                     sender={message.sender}
                     timestamp={message.timestamp}
+                    nutritionPlan={message.nutritionPlan}
+                    workoutPlan={message.workoutPlan}
                   />
                 ))}
               </AnimatePresence>
 
-              {/* Save Workout Plan Button */}
+              {/* Save Workout Plan Button(s) */}
               {showSaveWorkoutButton && currentWorkoutPlan && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -401,22 +469,54 @@ export default function ChatBox() {
                   <div className="max-w-3xl mx-auto">
                     <div className="flex justify-center">
                       <div className="bg-white dark:bg-dark-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-dark-700">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 text-center">
-                          I&apos;ve created a workout plan for you! Would you like to save it to your profile?
-                        </p>
-                        <div className="flex space-x-3 justify-center">
-                          <SavePlanButton
-                            type="workout"
-                            data={currentWorkoutPlan}
-                            onSave={handleSaveWorkoutPlan}
-                          />
-                          <button
-                            onClick={() => setShowSaveWorkoutButton(false)}
-                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                          >
-                            No thanks
-                          </button>
-                        </div>
+                        {/* Check if we should show both buttons */}
+                        {messages.find(msg => msg.showBothButtons) ? (
+                          <>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 text-center">
+                              I&apos;ve created your workout plan! Choose what you&apos;d like to do:
+                            </p>
+                            <div className="flex space-x-3 justify-center">
+                              <SavePlanButton
+                                type="workout"
+                                data={currentWorkoutPlan}
+                                onSave={handleSaveWorkoutPlan}
+                                action="update"
+                              />
+                              <SavePlanButton
+                                type="workout"
+                                data={currentWorkoutPlan}
+                                onSave={handleSaveWorkoutPlan}
+                                action="add"
+                              />
+                              <button
+                                onClick={() => setShowSaveWorkoutButton(false)}
+                                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                              >
+                                No thanks
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 text-center">
+                              I&apos;ve created a workout plan for you! Would you like to save it to your profile?
+                            </p>
+                            <div className="flex space-x-3 justify-center">
+                              <SavePlanButton
+                                type="workout"
+                                data={currentWorkoutPlan}
+                                onSave={handleSaveWorkoutPlan}
+                                action="add"
+                              />
+                              <button
+                                onClick={() => setShowSaveWorkoutButton(false)}
+                                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                              >
+                                No thanks
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -434,14 +534,14 @@ export default function ChatBox() {
                     <div className="flex justify-center">
                       <div className="bg-white dark:bg-dark-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-dark-700">
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 text-center">
-                          I&apos;ve created a nutrition plan for you! Would you like detailed recipes for these meals?
+                          I&apos;ve created a nutrition plan for you! Would you like detailed recipes and cooking instructions?
                         </p>
                         <div className="flex space-x-3 justify-center">
                           <button
-                            onClick={handleProvideRecipe}
+                            onClick={handleGenerateMealPlan}
                             className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors"
                           >
-                            🍳 Provide Recipe
+                            🍽️ Generate Meal Plan
                           </button>
                           <button
                             onClick={() => setShowProvideRecipeButton(false)}

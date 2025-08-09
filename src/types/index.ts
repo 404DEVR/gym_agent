@@ -22,12 +22,15 @@ export interface WorkoutPlan {
   days: number
   exercises: {
     day: string
+    day_name?: string
     exercises: {
       name: string
       sets: number
       reps: string
+      weight?: string | number
       rest: string
       notes?: string
+      muscle_groups?: string[]
     }[]
   }[]
   created_at?: string

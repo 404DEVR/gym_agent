@@ -35,8 +35,8 @@ export default function ChefPage() {
                 // Clear the localStorage data after loading
                 localStorage.removeItem('nutritionPlanData')
 
-                // Automatically generate meal plan if we have enough data
-                if (parsedData.goal && parsedData.ingredients && parsedData.ingredients.length > 0) {
+                // Automatically generate meal plan if we have enough data or auto_generate flag is set
+                if ((parsedData.goal && parsedData.ingredients && parsedData.ingredients.length > 0) || parsedData.auto_generate) {
                     // Small delay to ensure state is updated
                     setTimeout(() => {
                         generateMealPlanFromData(parsedData)
@@ -267,6 +267,7 @@ export default function ChefPage() {
                                 type="meal"
                                 data={mealPlan}
                                 onSave={() => console.log('Meal plan saved!')}
+                                fromChefPage={true}
                             />
                         </div>
 
