@@ -244,20 +244,50 @@ export default function ChatBox() {
   const handleGenerateMealPlan = () => {
     if (!currentNutritionPlan) return
 
-    // Extract ingredients from the nutrition plan text for chef page
-    const extractedIngredients = [
-      'oats', 'greek yogurt', 'berries', 'eggs', 'whole grain bread', 'avocado',
-      'chicken breast', 'brown rice', 'mixed vegetables', 'olive oil', 'lemon',
-      'fish', 'tofu', 'steamed vegetables', 'lentils', 'cucumber',
-      'apple', 'peanut butter', 'almonds', 'cottage cheese', 'protein powder'
-    ]
+    // Extract ingredients from the currentNutritionPlan (support both chat JSON and meal-plan JSON shapes)
+    const ingredientSet = new Set<string>()
+    type ChatMeal = { foods?: { item?: string }[] }
+    type ChatPlan = {
+      goal?: string
+      ingredients?: string[]
+      dietary_restrictions?: string[]
+      target_calories?: number
+      daily_totals?: { calories?: number }
+      meals?: Record<string, ChatMeal>
+    }
+    const plan = currentNutritionPlan as unknown as ChatPlan
+
+    // Case 1: plan already has ingredients array
+    if (Array.isArray(plan.ingredients)) {
+      for (const ing of plan.ingredients as string[]) {
+        if (typeof ing === 'string' && ing.trim()) ingredientSet.add(ing.trim())
+      }
+    }
+
+    // Case 2: chat nutrition plan shape: meals is an object with foods arrays
+    const meals = plan.meals
+    if (meals && !Array.isArray(meals) && typeof meals === 'object') {
+      Object.values(meals as Record<string, ChatMeal>).forEach((meal) => {
+        if (meal && Array.isArray(meal.foods)) {
+          meal.foods.forEach((food) => {
+            const item = typeof food?.item === 'string' ? food.item.trim() : ''
+            if (item) ingredientSet.add(item)
+          })
+        }
+      })
+    }
+
+    // Case 3: meal-plan endpoint shape (array of meals) may not include ingredients; skip
+
+    const extractedIngredients = Array.from(ingredientSet)
+    if (extractedIngredients.length === 0) return
 
     // Structure the nutrition plan data for the chef page (only what's needed for chef page)
     const nutritionPlanData = {
-      goal: currentNutritionPlan.goal || 'Weight Loss',
+      goal: plan.goal || 'Weight Loss',
       ingredients: extractedIngredients,
-      dietary_restrictions: currentNutritionPlan.dietary_restrictions || [],
-      target_calories: currentNutritionPlan.target_calories || 2000,
+      dietary_restrictions: plan.dietary_restrictions || [],
+      target_calories: plan.target_calories || plan?.daily_totals?.calories || 2000,
       auto_generate: true // Flag to auto-generate meal plan
     }
 

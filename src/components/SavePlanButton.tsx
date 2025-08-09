@@ -141,7 +141,7 @@ export default function SavePlanButton({ type, data, onSave, fromChefPage = fals
 
   const getButtonText = () => {
     if (type === 'workout') {
-      return action === 'update' ? 'Update Plan' : 'Save to Profile'
+      return action === 'update' ? 'Update Plan' : 'Add New Plan'
     }
     return 'Save to Profile'
   }
